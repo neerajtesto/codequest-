@@ -1,0 +1,127 @@
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+#include<stdbool.h>
+  char res[100];
+void * removeComments(char prgm[100])
+{
+    int n =strlen(prgm);
+  
+    bool s_cmt = false;
+    bool m_cmt = false;
+	int j=0;
+    for (int i=0; i<n; i++)
+    {
+       
+        if (s_cmt == true && prgm[i] == '\n'){
+            s_cmt = false;
+                }
+        else if  (m_cmt == true && prgm[i] == '*' && prgm[i+1] == '/'){
+            m_cmt = false;
+			i++;
+ 
+        }
+        else if (s_cmt || m_cmt){
+            continue;
+        }
+        
+        else if (prgm[i] == '/' && prgm[i+1] == '/'){
+            s_cmt = true;
+			i++;
+			}
+        else if (prgm[i] == '/' && prgm[i+1] == '*'){
+            m_cmt = true,  i++;
+ 
+        }
+        else {
+		res[j++] = prgm[i];
+		}
+    }
+	res[j+1]='\0';
+}
+bool iskeyword(char str[100]){
+    char keyword[32][10]={
+      "auto","double","int","struct","break","else","long",
+      "switch","case","enum","register","typedef","char",
+      "extern","return","union","const","float","short",
+      "unsigned","continue","for","signed","void","default",
+      "goto","sizeof","voltile","do","if","static","while"
+   } ;
+   
+   int flag=0,i;
+   for(i = 0; i < 32; i++) {
+      if(strcmp(str,keyword[i])==0) {
+         flag=1;
+      }
+   }
+   if(flag==1)
+    return true;
+   else
+     return false;
+}
+
+int main()
+
+{
+    FILE* ptr;
+    char ch;
+ 
+    ptr = fopen("test.txt", "r");
+    if (NULL == ptr) {
+        printf("File unable to open \n");
+    }
+   int j=0,counter=0;
+   char buffer[100],temp;
+    do {
+        temp=ch;
+        ch = fgetc(ptr);
+        buffer[j]=ch;
+        j++;
+    } while (ch != EOF);
+    fclose(ptr);
+   printf("Length of  Buffer : %d\n",strlen(buffer));
+puts("----------------------------------------");
+for(j=0;j<strlen(buffer);j++){
+    printf("%c",buffer[j]);
+}
+int i;
+removeComments(buffer);
+puts("----------------------------------------");
+for(i=0;i<strlen(res);i++){
+      printf("%c",res[i]);
+}
+puts("\n----------------------------------------");
+char buffer2[2048];
+j=0;
+int flag=1;
+puts(" ");
+for(i=0;i<strlen(res);i++){
+    if(isalnum(res[i])){
+        buffer2[j++]=res[i];
+        flag=0;
+    }
+    else{
+        buffer2[j]='\0';
+        j=0;
+        flag=1;
+    }
+    if(flag==1){
+        if(!strcmp(buffer2,"")==0 ){
+           
+            if(isdigit(buffer2)){
+                        printf("Constant : %s\n",buffer2);
+                 }
+
+            if(iskeyword(buffer2)==true){
+                printf("Keyword : %s\n",buffer2);
+            }
+            else{
+                   
+                    
+                         printf("Identifier : %s\n",buffer2);
+            }
+        }
+    }
+}
+    return 0;
+}
